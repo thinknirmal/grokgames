@@ -1,0 +1,75 @@
+name: Update Games List
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'public/games/**'  # Only run when changes are made in the games directory
+
+jobs:
+  update-games-list:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Needed to push changes back to the repository
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Generate games list
+        run: |
+          # Create a Node.js script to scan directories and generate JSON
+          cat > generate-games-list.js << 'EOL'
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Path to the games directory
+          const gamesDir = path.join('public', 'games');
+          const outputFile = path.join('public', 'games-list.json');
+          
+          try {
+            // Get all directories in the games folder
+            const gameDirectories = fs.readdirSync(gamesDir, { withFileTypes: true })
+              .filter(dirent => dirent.isDirectory())
+              .filter(dirent => {
+                // Only include directories that have a gg.json file
+                const ggJsonPath = path.join(gamesDir, dirent.name, 'gg.json');
+                return fs.existsSync(ggJsonPath);
+              })
+              .map(dirent => dirent.name);
+            
+            // Write the list to games-list.json
+            fs.writeFileSync(outputFile, JSON.stringify(gameDirectories, null, 4));
+            
+            console.log('Generated games list with', gameDirectories.length, 'games');
+            console.log(gameDirectories);
+          } catch (error) {
+            console.error('Error generating games list:', error);
+            process.exit(1);
+          }
+          EOL
+          
+          # Run the script
+          node generate-games-list.js
+      
+      - name: Check for changes
+        id: check_changes
+        run: |
+          git diff --quiet public/games-list.json || echo "changes=true" >> $GITHUB_OUTPUT
+      
+      - name: Commit and push if changed
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add public/games-list.json
+          git commit -m "Auto-update games list"
+          git push 

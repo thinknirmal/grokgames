@@ -1,0 +1,27 @@
+{
+    "id": "example-game",
+    "title": "Example Game",
+    "description": "A simple game where you move a player to catch falling objects. Use as a template for creating your own games!",
+    "price": 0,
+    "isNew": true,
+    "isHot": false,
+    "imageUrl": "/games/example-game/cover.jpg",
+    "releaseDate": "2023-09-15",
+    "tags": [
+        "example",
+        "tutorial",
+        "action"
+    ],
+    "aiModels": [
+        {
+            "name": "Claude 3",
+            "role": "primary",
+            "contribution": "Generated the entire game code, HTML, CSS, and JavaScript"
+        },
+        {
+            "name": "DALL-E 3",
+            "role": "secondary",
+            "contribution": "Inspired the visual design and color scheme"
+        }
+    ]
+}

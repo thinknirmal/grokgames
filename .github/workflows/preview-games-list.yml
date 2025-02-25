@@ -1,0 +1,117 @@
+name: Preview Games List Changes
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'public/games/**'  # Only run when changes are made in the games directory
+
+jobs:
+  preview-games-list:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Generate preview of games list
+        run: |
+          # Create a Node.js script to scan directories and generate JSON
+          cat > generate-games-list.js << 'EOL'
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Path to the games directory
+          const gamesDir = path.join('public', 'games');
+          const outputFile = path.join('public', 'games-list.json');
+          const previewFile = 'preview-games-list.json';
+          
+          try {
+            // Get all directories in the games folder
+            const gameDirectories = fs.readdirSync(gamesDir, { withFileTypes: true })
+              .filter(dirent => dirent.isDirectory())
+              .filter(dirent => {
+                // Only include directories that have a gg.json file
+                const ggJsonPath = path.join(gamesDir, dirent.name, 'gg.json');
+                return fs.existsSync(ggJsonPath);
+              })
+              .map(dirent => dirent.name);
+            
+            // Read current games list for comparison
+            let currentGamesList = [];
+            try {
+              const currentGamesListContent = fs.readFileSync(outputFile, 'utf8');
+              currentGamesList = JSON.parse(currentGamesListContent);
+            } catch (error) {
+              console.log('No existing games list found or invalid JSON, creating new one');
+            }
+            
+            // Write the preview list
+            fs.writeFileSync(previewFile, JSON.stringify(gameDirectories, null, 4));
+            
+            // Compare and output differences
+            const added = gameDirectories.filter(game => !currentGamesList.includes(game));
+            const removed = currentGamesList.filter(game => !gameDirectories.includes(game));
+            
+            console.log('--- Games List Preview ---');
+            console.log(`Total games: ${gameDirectories.length}`);
+            
+            if (added.length > 0) {
+              console.log(`\nAdded games (${added.length}):`);
+              added.forEach(game => console.log(` - ${game}`));
+            }
+            
+            if (removed.length > 0) {
+              console.log(`\nRemoved games (${removed.length}):`);
+              removed.forEach(game => console.log(` - ${game}`));
+            }
+            
+            console.log('\nFull games list:');
+            console.log(gameDirectories);
+            
+          } catch (error) {
+            console.error('Error generating games list preview:', error);
+            process.exit(1);
+          }
+          EOL
+          
+          # Run the script
+          node generate-games-list.js
+          
+      - name: Comment PR with preview
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            
+            try {
+              // Get the preview content
+              const preview = fs.readFileSync('preview-games-list.json', 'utf8');
+              const gamesList = JSON.parse(preview);
+              
+              const body = `## Games List Preview
+            
+            This PR will ${gamesList.length === 0 ? 'remove all games' : `update the games list to include ${gamesList.length} games`}.
+            
+            \`\`\`json
+            ${preview}
+            \`\`\`
+            
+            *Note: This games list will be automatically updated when this PR is merged.*`;
+            
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            } catch (error) {
+              console.error('Error creating PR comment:', error);
+            } 

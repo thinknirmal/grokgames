@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Example Game Cover</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #222;
+            width: 800px;
+            height: 450px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #333 0%, #111 100%);
+            z-index: -1;
+        }
+
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: rgba(245, 197, 24, 0.6);
+            border-radius: 50%;
+        }
+
+        .title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(245, 197, 24, 0.8);
+            color: #f5c518;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #ccc;
+        }
+
+        .player {
+            width: 60px;
+            height: 60px;
+            background-color: #f5c518;
+            border-radius: 50%;
+            margin-bottom: 50px;
+            box-shadow: 0 0 30px rgba(245, 197, 24, 0.6);
+        }
+
+        .target {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #e74c3c;
+            border-radius: 4px;
+            animation: fall 2s linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px);
+            }
+
+            100% {
+                transform: translateY(450px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="player"></div>
+    <h1 class="title">Example Game</h1>
+    <p class="subtitle">Catch falling objects to score points!</p>
+
+    <script>
+        // Create particle effect
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 30;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+
+            // Random position
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+
+            // Random size
+            const size = Math.random() * 4 + 3;
+
+            particle.style.left = `${x}%`;
+            particle.style.top = `${y}%`;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.opacity = (Math.random() * 0.5 + 0.3).toString();
+
+            particlesContainer.appendChild(particle);
+        }
+
+        // Create a few targets
+        for (let i = 0; i < 5; i++) {
+            const target = document.createElement('div');
+            target.className = 'target';
+
+            const x = Math.random() * 700 + 50;
+            target.style.left = `${x}px`;
+            target.style.animationDelay = `${Math.random() * 2}s`;
+            target.style.animationDuration = `${Math.random() * 1 + 1.5}s`;
+
+            document.body.appendChild(target);
+        }
+    </script>
+</body>
+
+</html>

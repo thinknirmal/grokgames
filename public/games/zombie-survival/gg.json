@@ -1,0 +1,32 @@
+{
+    "id": "zombie-survival",
+    "title": "Zombie Survival",
+    "description": "Survive in a world overrun by zombies. Scavenge for resources and build your safe haven.",
+    "price": 35,
+    "isNew": true,
+    "isHot": false,
+    "imageUrl": "/games/zombie-survival/cover.avif",
+    "releaseDate": "2023-12-05",
+    "tags": [
+        "survival",
+        "horror",
+        "zombies"
+    ],
+    "aiModels": [
+        {
+            "name": "Gemini Pro",
+            "role": "primary",
+            "contribution": "Generated game code and survival mechanics"
+        },
+        {
+            "name": "Claude 2",
+            "role": "secondary",
+            "contribution": "Created game narrative and dialogue"
+        },
+        {
+            "name": "DALL-E 3",
+            "role": "secondary",
+            "contribution": "Generated zombie character designs"
+        }
+    ]
+}
