@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-
 const props = defineProps<{
   isOpen: boolean
 }>();
@@ -15,7 +13,7 @@ const handleClose = () => {
 </script>
 
 <template>
-  <div v-if="isOpen" class="modal-overlay" @click="handleClose">
+  <div v-if="props.isOpen" class="modal-overlay" @click="handleClose">
     <div class="modal-container" @click.stop>
       <div class="modal-header">
         <h2>Submit Your Game</h2>
