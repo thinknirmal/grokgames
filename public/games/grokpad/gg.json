@@ -1,0 +1,27 @@
+{
+    "id": "grokpad",
+    "title": "Grokpad - Interactive Musical Experience",
+    "description": "Anyone can create music with GrokPad, an interactive musical canvas with customizable scales and sound options.",
+    "price": 0,
+    "isNew": true,
+    "isHot": false,
+    "imageUrl": "/games/grokpad/cover.png",
+    "releaseDate": "2024-01-01",
+    "tags": [
+        "music",
+        "creative",
+        "fun"
+    ],
+    "aiModels": [
+        {
+            "name": "Grok 3",
+            "role": "primary",
+            "contribution": "Generated the entire game code, HTML, CSS, and JavaScript."
+        },
+        {
+            "name": "Claude Sonnet 3.7",
+            "role": "secondary",
+            "contribution": "Helped with performance optimizations and fine-tuning of sound effects."
+        }
+    ]
+}

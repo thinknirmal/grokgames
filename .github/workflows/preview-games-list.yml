@@ -22,38 +22,49 @@ jobs:
       
       - name: Generate preview of games list
         run: |
+          # Create a package.json to specify module type
+          cat > package.json << 'EOL'
+          {
+            "name": "games-list-generator",
+            "version": "1.0.0",
+            "type": "module"
+          }
+          EOL
+          
           # Create a Node.js script to scan directories and generate JSON
           cat > generate-games-list.js << 'EOL'
-          const fs = require('fs');
-          const path = require('path');
+          import { promises as fs } from 'fs';
+          import { join } from 'path';
+          import { fileURLToPath } from 'url';
+          import { readdirSync, existsSync, writeFileSync, readFileSync } from 'fs';
           
           // Path to the games directory
-          const gamesDir = path.join('public', 'games');
-          const outputFile = path.join('public', 'games-list.json');
+          const gamesDir = join('public', 'games');
+          const outputFile = join('public', 'games-list.json');
           const previewFile = 'preview-games-list.json';
           
           try {
             // Get all directories in the games folder
-            const gameDirectories = fs.readdirSync(gamesDir, { withFileTypes: true })
+            const gameDirectories = readdirSync(gamesDir, { withFileTypes: true })
               .filter(dirent => dirent.isDirectory())
               .filter(dirent => {
                 // Only include directories that have a gg.json file
-                const ggJsonPath = path.join(gamesDir, dirent.name, 'gg.json');
-                return fs.existsSync(ggJsonPath);
+                const ggJsonPath = join(gamesDir, dirent.name, 'gg.json');
+                return existsSync(ggJsonPath);
               })
               .map(dirent => dirent.name);
             
             // Read current games list for comparison
             let currentGamesList = [];
             try {
-              const currentGamesListContent = fs.readFileSync(outputFile, 'utf8');
+              const currentGamesListContent = readFileSync(outputFile, 'utf8');
               currentGamesList = JSON.parse(currentGamesListContent);
             } catch (error) {
               console.log('No existing games list found or invalid JSON, creating new one');
             }
             
             // Write the preview list
-            fs.writeFileSync(previewFile, JSON.stringify(gameDirectories, null, 4));
+            writeFileSync(previewFile, JSON.stringify(gameDirectories, null, 4));
             
             // Compare and output differences
             const added = gameDirectories.filter(game => !currentGamesList.includes(game));
@@ -89,11 +100,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs');
+            import { readFileSync } from 'fs';
             
             try {
               // Get the preview content
-              const preview = fs.readFileSync('preview-games-list.json', 'utf8');
+              const preview = readFileSync('preview-games-list.json', 'utf8');
               const gamesList = JSON.parse(preview);
               
               const body = `## Games List Preview

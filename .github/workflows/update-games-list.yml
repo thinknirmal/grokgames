@@ -26,28 +26,39 @@ jobs:
       
       - name: Generate games list
         run: |
+          # Create a package.json to specify module type
+          cat > package.json << 'EOL'
+          {
+            "name": "games-list-generator",
+            "version": "1.0.0",
+            "type": "module"
+          }
+          EOL
+          
           # Create a Node.js script to scan directories and generate JSON
           cat > generate-games-list.js << 'EOL'
-          const fs = require('fs');
-          const path = require('path');
+          import { promises as fs } from 'fs';
+          import { join } from 'path';
+          import { fileURLToPath } from 'url';
+          import { readdirSync, existsSync, writeFileSync } from 'fs';
           
           // Path to the games directory
-          const gamesDir = path.join('public', 'games');
-          const outputFile = path.join('public', 'games-list.json');
+          const gamesDir = join('public', 'games');
+          const outputFile = join('public', 'games-list.json');
           
           try {
             // Get all directories in the games folder
-            const gameDirectories = fs.readdirSync(gamesDir, { withFileTypes: true })
+            const gameDirectories = readdirSync(gamesDir, { withFileTypes: true })
               .filter(dirent => dirent.isDirectory())
               .filter(dirent => {
                 // Only include directories that have a gg.json file
-                const ggJsonPath = path.join(gamesDir, dirent.name, 'gg.json');
-                return fs.existsSync(ggJsonPath);
+                const ggJsonPath = join(gamesDir, dirent.name, 'gg.json');
+                return existsSync(ggJsonPath);
               })
               .map(dirent => dirent.name);
             
             // Write the list to games-list.json
-            fs.writeFileSync(outputFile, JSON.stringify(gameDirectories, null, 4));
+            writeFileSync(outputFile, JSON.stringify(gameDirectories, null, 4));
             
             console.log('Generated games list with', gameDirectories.length, 'games');
             console.log(gameDirectories);

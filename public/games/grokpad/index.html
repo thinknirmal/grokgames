@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grokpad</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="GrokPad - Interactive Musical Experience">
+  <meta name="description" content="Anyone can create music with GrokPad, an interactive musical canvas with customizable scales and sound options.">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://grokpad.app/">
+  <meta property="og:title" content="GrokPad - Interactive Musical Experience">
+  <meta property="og:description" content="Anyone can create music with GrokPad, an interactive musical canvas with customizable scales and sound options.">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary">
+  <meta property="twitter:url" content="https://grokpad.app/">
+  <meta property="twitter:title" content="GrokPad - Interactive Musical Experience">
+  <meta property="twitter:description" content="Anyone can create music with GrokPad, an interactive musical canvas with customizable scales and sound options.">
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: black;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      touch-action: none;
+    }
+    #controls {
+      position: absolute;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 20px;
+      top: 0;
+      left: 0;
+      padding: 0 10px;
+      z-index: 10;
+      background-color: #1a1a1a;
+      color: white;
+      border: 1px solid #424242;
+      font-family: sans-serif;
+    }
+    
+    /* Toggle Switch Styles */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+      vertical-align: middle;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #333;
+      transition: .4s;
+      border-radius: 24px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: #4CAF50;
+    }
+    
+    input:focus + .slider {
+      box-shadow: 0 0 1px #ff9900;
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    
+    .switch-label {
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      align-items: center;
+      font-family: sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: #908982;
+    }
+    
+    /* Custom Select Styles */
+    .select-container {
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+    .custom-select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 14px 32px 14px 12px;
+      font-size: 18px;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.3s ease;
+      min-width: 140px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .custom-select:hover, .custom-select:focus {
+      background-color: #444;
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+    }
+    
+    .select-container:after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid #ff9900;
+      pointer-events: none;
+    }
+    
+    /* Style for dropdown options */
+    .custom-select option {
+      padding: 10px;
+      background-color: #333;
+      color: white;
+    }
+    
+    /* Style for option groups */
+    .custom-select optgroup {
+      font-weight: bold;
+      font-style: normal;
+      background-color: #222;
+      color: #ff9900;
+      padding: 8px;
+    }
+    
+    .custom-select optgroup option {
+      font-weight: normal;
+      padding-left: 15px;
+    }
+    
+    /* Add scrollbar styling for the dropdown */
+    select::-webkit-scrollbar {
+      width: 10px;
+    }
+    
+    select::-webkit-scrollbar-track {
+      background: #222;
+    }
+    
+    select::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 5px;
+    }
+    
+    select::-webkit-scrollbar-thumb:hover {
+      background: #777;
+    }
+    
+    .control-group {
+      display: flex;
+      align-items: center;
+      border-right: 1px solid #555;
+      padding-right: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <div class="control-group">
+      <div class="select-container">
+        <select id="quantizer" class="custom-select">
+          <option value="theremin">Theremin</option>
+          <option value="chromatic">Chromatic</option>
+          
+          <optgroup label="Common Scales">
+            <option value="major">Major</option>
+            <option value="minor">Minor</option>
+            <option value="pentatonic_major">Pentatonic Major</option>
+            <option value="pentatonic_minor">Pentatonic Minor</option>
+            <option value="blues">Blues</option>
+            <option value="harmonic_minor">Harmonic Minor</option>
+            <option value="melodic_minor">Melodic Minor</option>
+            <option value="whole_tone">Whole Tone</option>
+            <option value="diminished">Diminished</option>
+          </optgroup>
+          
+          <optgroup label="Modes">
+            <option value="dorian">Dorian</option>
+            <option value="phrygian">Phrygian</option>
+            <option value="lydian">Lydian</option>
+            <option value="mixolydian">Mixolydian</option>
+            <option value="locrian">Locrian</option>
+          </optgroup>
+          
+          <optgroup label="World Scales">
+            <option value="balinese">Balinese</option>
+            <option value="chinese">Chinese</option>
+            <option value="hawaiian" selected>Hawaiian</option>
+            <option value="hungarian">Hungarian</option>
+            <option value="indian">Indian</option>
+            <option value="japanese">Japanese</option>
+            <option value="gamelan">Javanese Gamelan</option>
+            <option value="romanian">Romanian</option>
+          </optgroup>
+
+          <optgroup label="Indian Ragas">
+            <option value="raga_bhairav">Bhairav</option>
+            <option value="raga_ahir_bhairav">Ahir Bhairav</option>
+            <option value="raga_bhairavi">Bhairavi</option>
+            <option value="raga_asavari">Asavari</option>
+            <option value="raga_todi">Todi</option>
+            <option value="raga_yaman">Yaman</option>
+            <option value="raga_kafi">Kafi</option>
+            <option value="raga_desh">Desh</option>
+            <option value="raga_kedar">Kedar</option>
+            <option value="raga_marwa">Marwa</option>
+            <option value="raga_purvi">Purvi</option>
+            <option value="raga_shree">Shree</option>
+            <option value="raga_khamaj">Khamaj</option>
+            <option value="raga_bageshri">Bageshri</option>
+            <option value="raga_jog">Jog</option>
+            <option value="raga_bihag">Bihag</option>
+            <option value="raga_malkauns">Malkauns</option>
+            <option value="raga_chandrakauns">Chandrakauns</option>
+            <option value="raga_kirwani">Kirwani</option>
+            <option value="raga_miyan_ki_malhar">Miyan Ki Malhar</option>
+            <option value="raga_charukeshi">Charukeshi</option>
+            <option value="raga_hindol">Hindol</option>
+            <option value="raga_durga">Durga</option>
+          </optgroup>
+          
+          <optgroup label="Middle Eastern">
+            <option value="arabic">Arabic</option>
+            <option value="persian">Persian</option>
+            <option value="egyptian">Egyptian</option>
+          </optgroup>
+          
+          <optgroup label="Mediterranean">
+            <option value="byzantine">Byzantine</option>
+            <option value="spanish">Spanish</option>
+            <option value="klezmer">Klezmer</option>
+          </optgroup>
+          
+          <optgroup label="African">
+            <option value="african">African</option>
+            <option value="ethiopian">Ethiopian</option>
+            <option value="algerian">Algerian</option>
+          </optgroup>
+          
+          <optgroup label="Latin American">
+            <option value="flamenco">Flamenco</option>
+            <option value="cuban">Cuban</option>
+            <option value="brazilian">Brazilian</option>
+            <option value="kumoi">Kumoi</option>
+          </optgroup>
+          
+          <optgroup label="Experimental">
+            <option value="prometheus">Prometheus</option>
+            <option value="enigmatic">Enigmatic</option>
+            <option value="double_harmonic">Double Harmonic</option>
+            <option value="neapolitan">Neapolitan</option>
+            <option value="super_locrian">Super Locrian</option>
+            <option value="yo">Japanese Yo</option>
+            <option value="iwato">Japanese Iwato</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+    <div class="switch-label">
+      <span>TIMBRE</span>
+      <label class="switch">
+        <input type="checkbox" id="timbre" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="switch-label">
+      <span>DUET</span>
+      <label class="switch">
+        <input type="checkbox" id="duet" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+  <canvas></canvas>
+  <script src="script.js"></script>
+<!-- Cloudflare Pages Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e4a32df25c024c7facb8007218253df6"}'></script><!-- Cloudflare Pages Analytics --></body>
+</html>
