@@ -5,6 +5,12 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const emit = defineEmits(['categoryChanged']);
 
+// Define types for the category data
+interface CategoryData {
+    name: string;
+    icon: string;
+}
+
 // Map of category IDs to their display names and icons
 const categoryMap = {
     'all-games': { name: 'All Games', icon: 'ki-home-3' },
@@ -30,7 +36,10 @@ const categoryMap = {
     'card-games': { name: 'Card Games', icon: 'ki-note-2' },
     'board-games': { name: 'Board Games', icon: 'ki-element-equal' },
     'experimental-indie': { name: 'Experimental/Indie', icon: 'ki-abstract-32' }
-};
+} as const;
+
+// Derive the CategoryId type from the keys of categoryMap
+type CategoryId = keyof typeof categoryMap;
 
 // Create an array of categories for iteration in the template
 const categories = computed(() => {
@@ -43,13 +52,16 @@ const categories = computed(() => {
 
 // Get the current category from the route
 const currentCategory = computed(() => {
-    const categoryId = route.params.categoryId as string || 'all-games';
-    return categoryId;
+    const categoryId = (route.params.categoryId as string) || 'all-games';
+    // Check if the category exists in our map, otherwise default to 'all-games'
+    return Object.keys(categoryMap).includes(categoryId)
+        ? categoryId as CategoryId
+        : 'all-games' as CategoryId;
 });
 
 // Get the display name for the current category
 const currentCategoryName = computed(() => {
-    return categoryMap[currentCategory.value]?.name || 'All Games';
+    return categoryMap[currentCategory.value].name;
 });
 
 // Watch for changes in the category and emit the category name to parent
