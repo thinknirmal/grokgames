@@ -23,7 +23,7 @@ provide('currentCategoryName', currentCategoryName);
             id="header">
             <!-- Container -->
             <div class="container-fixed flex items-center justify-between flex-wrap gap-3">
-                <a href="/metronic/tailwind/demo10/">
+                <a href="/">
                     <img class="size-[34px]" src="/media/app/mini-logo-circle-success.svg" />
                 </a>
                 <span class="text-gray-900 text-lg font-medium text-inverse grow">

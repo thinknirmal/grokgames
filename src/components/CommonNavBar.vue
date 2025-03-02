@@ -82,7 +82,7 @@ onMounted(() => {
         <!-- Sidebar Header -->
         <div class="flex flex-col gap-2.5" id="sidebar_header">
             <div class="flex items-center gap-2.5 px-3.5 h-[70px]">
-                <a href="/metronic/tailwind/demo10/index.html">
+                <a href="/">
                     <img class="size-[34px]" src="/media/app/mini-logo-circle-success.svg" />
                 </a>
                 <span class="text-gray-900 text-lg font-medium text-inverse grow">
@@ -91,8 +91,7 @@ onMounted(() => {
             </div>
             <div class="flex items-center gap-2.5 px-3.5">
                 <!-- Input -->
-                <a class="btn btn-dark btn-sm justify-center min-w-[198px]"
-                    href="/metronic/tailwind/demo10/public-profile/projects/3-columns">
+                <a class="btn btn-dark btn-sm justify-center min-w-[198px]" href="/">
                     <i class="ki-filled ki-plus">
                     </i>
                     Publish Your Game
