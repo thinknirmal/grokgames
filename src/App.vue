@@ -1,6 +1,18 @@
 <script lang="ts" setup>
 import CommonBodyFooter from "@/components/CommonBodyFooter.vue";
 import CommonNavbar from "@/components/CommonNavBar.vue";
+import { ref, provide } from 'vue';
+
+// Create a ref to store the current category name
+const currentCategoryName = ref('All Games');
+
+// Handle category change from the navbar
+const handleCategoryChange = (categoryName: string) => {
+    currentCategoryName.value = categoryName;
+};
+
+// Provide the category name to descendant components
+provide('currentCategoryName', currentCategoryName);
 </script>
 
 <template>
@@ -28,7 +40,7 @@ import CommonNavbar from "@/components/CommonNavBar.vue";
         <!-- Wrapper -->
         <div class="flex flex-col lg:flex-row grow pt-[--tw-header-height] lg:pt-0">
             <!-- Sidebar -->
-            <CommonNavbar />
+            <CommonNavbar @category-changed="handleCategoryChange" />
             <!-- End of Sidebar -->
             <!-- Main -->
             <div
