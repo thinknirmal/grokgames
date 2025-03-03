@@ -125,7 +125,7 @@ onMounted(() => {
                     GrokGames
                 </span>
             </div>
-            <div class="card mx-1.5 -mt-4 bg-rose-950">
+            <div class="card mx-1.5 -mt-4 bg-gray-100">
                 <div class="card-body p-2">
                     <!-- Authentication Box -->
                     <div v-if="currentUser" class="flex flex-col gap-2">
