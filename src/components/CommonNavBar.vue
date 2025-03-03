@@ -117,13 +117,10 @@ onMounted(() => {
         data-drawer-enable="true|lg:false" id="sidebar">
         <!-- Sidebar Header -->
         <div class="flex flex-col gap-2.5" id="sidebar_header">
-            <div class="flex items-center gap-2.5 px-3.5 h-[70px]">
+            <div class="flex items-center gap-2.5 px-3.5 h-[80px]">
                 <a href="/">
-                    <img class="size-[34px]" src="/media/app/mini-logo-circle-success.svg" />
+                    <img src="/media/images/GrokGames.png" />
                 </a>
-                <span class="text-gray-900 text-lg font-medium text-inverse grow">
-                    GrokGames
-                </span>
             </div>
             <div class="card mx-1.5 -mt-4 bg-gray-100">
                 <div class="card-body p-2">
@@ -184,8 +181,8 @@ onMounted(() => {
                 class="scrollable-y-auto h-full max-h-[calc(100vh-150px)] overflow-y-auto [--tw-scrollbar-thumb-color:var(--tw-gray-300)] mt-5">
                 <!-- Primary Menu -->
                 <div class="mb-5">
-                    <h3 class="text-sm text-gray-500 uppercase ps-5 inline-block mb-3">
-                        Games
+                    <h3 class="text-sm text-danger font-black uppercase ps-5 inline-block mb-3">
+                        Zones
                     </h3>
                     <div class="menu flex flex-col w-full gap-1.5 px-3.5" data-menu="true"
                         data-menu-accordion-expand-all="false" id="sidebar_primary_menu">

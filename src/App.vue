@@ -24,11 +24,8 @@ provide('currentCategoryName', currentCategoryName);
             <!-- Container -->
             <div class="container-fixed flex items-center justify-between flex-wrap gap-3">
                 <a href="/">
-                    <img class="size-[34px]" src="/media/app/mini-logo-circle-success.svg" />
+                    <img src="/media/images/GrokGames.png" class="h-[34px]" />
                 </a>
-                <span class="text-gray-900 text-lg font-medium text-inverse grow">
-                    GrokGames
-                </span>
                 <button class="btn btn-icon btn-light btn-clear btn-sm -me-2" data-drawer-toggle="#sidebar">
                     <i class="ki-filled ki-menu">
                     </i>
