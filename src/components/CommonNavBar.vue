@@ -1,9 +1,45 @@
 <script lang="ts" setup>
-import { computed, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useCurrentUser, useFirebaseAuth } from 'vuefire';
+import { signOut, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import ProfileImage from './ProfileImage.vue';
 
 const route = useRoute();
+const router = useRouter();
 const emit = defineEmits(['categoryChanged']);
+const auth = useFirebaseAuth();
+const currentUser = useCurrentUser();
+
+// Auth state
+const errorMessage = ref('');
+const isLoading = ref(false);
+
+// Handle Google sign-in
+const handleGoogleSignIn = async () => {
+    try {
+        isLoading.value = true;
+        errorMessage.value = '';
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth!, provider);
+    } catch (error: any) {
+        errorMessage.value = error.message || 'Failed to sign in with Google';
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+// Handle logout
+const handleLogout = async () => {
+    try {
+        isLoading.value = true;
+        await signOut(auth!);
+    } catch (error: any) {
+        console.error('Logout error:', error);
+    } finally {
+        isLoading.value = false;
+    }
+};
 
 // Define types for the category data
 interface CategoryData {
@@ -88,6 +124,43 @@ onMounted(() => {
                 <span class="text-gray-900 text-lg font-medium text-inverse grow">
                     GrokGames
                 </span>
+            </div>
+            <div class="card mx-1.5 -mt-4 bg-rose-950">
+                <div class="card-body p-2">
+                    <!-- Authentication Box -->
+                    <div v-if="currentUser" class="flex flex-col gap-2">
+                        <!-- Logged in state -->
+                        <div class="flex items-start gap-2">
+                            <ProfileImage :photoURL="currentUser?.photoURL" />
+                            <div class="flex flex-col">
+                                <span class="text-sm font-medium text-gray-900">{{ currentUser.displayName ||
+                                    currentUser.email }}</span>
+                                <span class="text-xs text-gray-500">{{ currentUser.email }}</span>
+                                <button @click="handleLogout" class="btn btn-sm btn-light-primary p-0 -mb-2"
+                                    :disabled="isLoading">
+                                    <i class="ki-solid ki-exit-right text-gray-500"></i>
+                                    {{ isLoading ? 'Signing out...' : 'Sign Out' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Not logged in state -->
+                    <div v-else class="flex flex-col gap-2">
+                        <h4 class="text-xs font-medium">Sign-in to your profile</h4>
+
+                        <!-- Error message -->
+                        <div v-if="errorMessage" class="bg-light-danger text-danger text-xs p-2 rounded mb-2">
+                            {{ errorMessage }}
+                        </div>
+
+                        <!-- Google sign in -->
+                        <button @click="handleGoogleSignIn" class="btn btn-sm btn-primary w-full" :disabled="isLoading">
+                            <i class="ki-solid ki-google me-1"></i>
+                            {{ isLoading ? 'Signing in...' : 'Continue with Google' }}
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="flex items-center gap-2.5 px-3.5">
                 <!-- Input -->
